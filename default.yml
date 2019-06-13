@@ -1,0 +1,14 @@
+Units:
+    - name: "Knight"
+      type: "human"
+      stats:
+          hp: 50
+          armor: 15
+          dmg: 22
+          fblockchance: .8
+          sblockchance: .4
+          bblockchance: .0
+          movement: 3
+          waittime: 1
+
+
