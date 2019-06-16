@@ -29,6 +29,9 @@ class Unit:
     def update_interactions(self, units):
         pass
 
+    def resetattr(self, attr):
+        setattr(self, attr, UNITS[self.id]['stats'][attr])
+
 
 class Knight(Unit):
     def __init__(self):
@@ -44,6 +47,8 @@ class Pyro(Unit):
             self.dmg = UNITS['Pyro']['stats']['dmg'] + \
                     UNITS['Dragon']['stats']['dmg'] // \
                     (units.count('Pyro') + units.count('Dpyro'))
+        else:
+            self.resetattr('dmg')
 
 class Dpyro(Unit):
     def __init__(self):
@@ -55,6 +60,9 @@ class Dpyro(Unit):
                     UNITS['Dragon']['stats']['dmg'] // \
                     (units.count('Pyro') + units.count('Dpyro'))
 
+        else:
+            self.resetattr('dmg')
+
 class Dragon(Unit):
     def __init__(self):
         super().__init__('Dragon')
@@ -63,6 +71,9 @@ class Dragon(Unit):
         if 'Dpyro' in units:
             self.dmg = UNITS['Dragon']['stats']['dmg'] // \
                     (units.count('Pyro') + units.count('Dpyro'))
+
+        else:
+            self.resetattr('dmg')
 
 if __name__ == '__main__':
     b = Board()

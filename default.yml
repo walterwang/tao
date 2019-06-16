@@ -19,7 +19,8 @@ Units:
             range: 1
         special:
             has_special: False
-    
+        pop: 1
+
     Pyro:
         description:
           name: "Pyromancer"
