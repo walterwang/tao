@@ -1,14 +1,88 @@
 Units:
-    - name: "Knight"
-      type: "human"
-      stats:
-          hp: 50
-          armor: 15
-          dmg: 22
-          fblockchance: .8
-          sblockchance: .4
-          bblockchance: .0
+    Knight:
+        description: 
+            name: "Knight"
+            type: "human"
+        stats:
+            hp: 50
+            armor: 15
+            dmg: 22
+            fblock: .8
+            sblock: .4
+            bblock: .0
+            movement: 3
+            wait: 1
+        attack:
+            heal: False
+            blockable: True
+            pattern: '.'
+            range: 1
+        special:
+            has_special: False
+    
+    Pyro:
+        description:
+          name: "Pyromancer"
+          type: "human"
+        stats:
+          hp: 35
+          armor: 8
+          dmg: 15
+          fblock: .4
+          sblock: .2
+          bblock: .0
           movement: 3
-          waittime: 1
+          wait: 3
+        attack:
+          heal: False
+          blockable: False
+          pattern: '+'
+          range: 3
+        special:
+          has_special: False
+        pop: 1
+    
+    Dpyro:
+        description:
+          name: "Dragomancer"
+          type: "human"
+        stats:
+          hp: 35
+          armor: 8
+          dmg: 15
+          fblock: .4
+          sblock: .2
+          bblock: .0
+          movement: 3
+          wait: 3
+        attack:
+          heal: False
+          blockable: False
+          pattern: '+'
+          range: 3
+        special:
+          has_special: False
+        pop: 1
 
+    Dragon:
+        description:
+          name: "Dragon"
+          type: "beast"
+        stats:
+          hp: 65
+          armor: 12
+          dmg: 28
+          fblock: .4
+          sblock: .2
+          bblock: .0
+          movement: 4
+          wait: 3
+        attack:
+          heal: False
+          blockable: False
+          pattern: '4'
+          range: 4
+        special:
+          has_special: False
+        pop: 2
 
