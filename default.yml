@@ -20,6 +20,7 @@ Units:
         special:
             has_special: False
         pop: 1
+        untamed: False
 
     Pyro:
         description:
@@ -42,7 +43,7 @@ Units:
         special:
           has_special: False
         pop: 1
-    
+        untamed: False 
     Dpyro:
         description:
           name: "Dragomancer"
@@ -64,6 +65,7 @@ Units:
         special:
           has_special: False
         pop: 1
+        unamed: False
 
     Dragon:
         description:
@@ -86,4 +88,4 @@ Units:
         special:
           has_special: False
         pop: 2
-
+        untamed: True
