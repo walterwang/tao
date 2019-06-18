@@ -29,6 +29,12 @@ class Unit:
     def update_interactions(self, units):
         pass
 
+    def getaoe(self, target):
+        return [target]
+
+    def getlos(self, target):
+        return target
+
     def resetattr(self, attr):
         setattr(self, attr, UNITS[self.id]['stats'][attr])
 

@@ -37,12 +37,20 @@ class Game:
     def attack(self, player, unit, target):
         targets = [target]
         a_unit = self.get_active_unit(player, unit)
-        if a_unit.los:
-            target = a_unit.getlos(target)
-        if a_unit.aoe:
-            targets = 
-        for u in self.all_units:
-            
+        target = a_unit.getlos(target)
+        targets = a_unit.getaoe(target) 
+        for t in targets:
+            for u in self.all_units:
+                if t == u.pos:
+                    self.calc_dmg(a_unit, u)
+
+    def calc_dmg(self, attacker, defender):
+        defender.hp -= attacker.dmg
+    
+    def orient(self, player, unit, orient):
+        a_unit = self.get_active_unit(player, unit)
+        #check if valid orientation
+        a_unit.orient = orient
 
     def check_valid_path(self, player, a_unit, path):
         if len(path) > a_unit.movement:
