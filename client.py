@@ -13,3 +13,4 @@ def client(ip, port, message):
         sock.close()
 if __name__ == '__main__':
     client(HOST, PORT, "Hello world 1")
+    client(HOST, PORT, "Hello world 2")
