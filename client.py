@@ -20,4 +20,6 @@ class Client:
 
 if __name__ == '__main__':
     c1 = Client(HOST, PORT)
-    c1.send('Hello')
+    c2 = Client(HOST, PORT)
+    c1.send('ready')
+
