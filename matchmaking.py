@@ -1,27 +1,29 @@
 from threading import Thread
 from queue import Queue
+from gamestate import Game
 import time
 
 class Matcher(Thread):
 
-    def __init__(self, game_q, match_q):
+    def __init__(self, game, match_q):
         super().__init__()
-        self.game_q = game_q
-        self.match_q = match_q
+        self.game = game
+        self.match_q = matddch_q
 
     def run(self):
         while True:
-            if self.game_q.qsize() > 1:
+            if len(self.game) > 1:
                 print('game found')
-                p1_q = self.game_q.get()
-                p2_q = self.game_q.get()
+                p0 = self.game.popitem()
+                p1 = self.game.popitem()
+                p0.begn = True
+                p1.begn = True
 
-                p1_q.put('found')
-                p2_q.put('found')
-                
-                game = Queue()
-                game.put(p1_q)
-                game.put(p2_q)
+                p0.game_start('game state')
+                p1.game_start('game state') 
+
+
+                g = Game(p0, p1)
 
                 self.match_q.put(game)
 
