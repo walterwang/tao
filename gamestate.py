@@ -49,7 +49,7 @@ class Game:
     
     def orient(self, player, unit, orient):
         a_unit = self.get_active_unit(player, unit)
-        #check if valid orientation
+        # check if valid orientation
         a_unit.orient = orient
 
     def check_valid_path(self, player, a_unit, path):
