@@ -36,11 +36,10 @@ class Handler:
             r = self.cmd.get(data[0], self.nocmd)(data)
             self.send(r)
             
-            
     def find(self, *args):
         self.game[self.session_id] = self
         ## game dict is monitored by matchmaker 
-        return self.session_id
+        return b'in queue'
 
     def canc(self, *args):
         try:
