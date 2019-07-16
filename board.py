@@ -4,7 +4,7 @@ class Board:
         self.pop_count = [0,0]
 
 
-    def add(self, unit, x, y, p=0):
+    def add(self, unit, x, y, p=0, uid=None):
         try:
             self.check_add(unit, x, y, p)
         except Exception as e:
@@ -14,7 +14,8 @@ class Board:
         self.pop_count[p] += unit.pop
         unit.pos = [x, y]
         unit.orient = [0, -1+p*2]
-        unit.uid = self._get_uid(p)
+        
+        unit.uid = uid if uid else self._get_uid(p)
         self.units[p][unit.uid] = unit
         self.update(p)
 

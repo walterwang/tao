@@ -1,13 +1,19 @@
 from itertools import cycle
 from threading import Thread
 from random import shuffle
+from board import Board
+
+import unit
+from unit import *
 
 class Game(Thread):
     def __init__(self, p0, p1):
         self.players = [p0, p1]
         shuffle(self.players)
+        self.board = Board()
         self.create_board() 
         print('board created')
+        print(self.board.units)
         self.players[0].send(b'you are player 1')
         self.players[1].send(b'you are player 2')
 
@@ -15,9 +21,10 @@ class Game(Thread):
         Thread.__init__(self)
     
     def create_board(self):
-        board_state = b'empty'
-        return board_state
-        
+        for ind, p in enumerate(self.players):
+            for uid, u in p.board_dict.items():
+                self.board.add(getattr(unit, u['id'])(), u['pos'][0], u['pos'][1], p=ind, uid=uid)
+                 
     def run(self):
         pass 
 

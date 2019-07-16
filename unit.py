@@ -10,7 +10,7 @@ class Unit:
         self.id = id
         self.uid = ''
         self.owner = ''
-
+        self.pos = ''
     def __setattr__(self, k, val):
         if isinstance(val, dict):
             for k, v in val.items():
@@ -19,7 +19,7 @@ class Unit:
             super().__setattr__(k, val)
     
     def __repr__(self):
-        return self.id
+        return f"{{'id':'{self.id}','pos':{self.pos}}}"
     
     def __eq__(self, string):
         if string == self.id:

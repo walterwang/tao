@@ -1,10 +1,11 @@
 from queue import Queue
 from threading import Thread
+from ast import literal_eval
 import random
 
 def threaded(fn):
     def wrapper(*args, **kwargs):
-        thread = thread(target=fn, args=args, kwargs=kwargs)
+        thread = Thread(target=fn, args=args, kwargs=kwargs)
         thread.start()
         return thread
     return wrapper
@@ -31,12 +32,14 @@ class Handler:
 
     def __call__(self):
         while True:
-            data = self.recv(1024).split(b' ')
-            print(data)
-            r = self.cmd.get(data[0], self.nocmd)(data)
+            data = self.recv(1024).split(b'||')
+            r = self.cmd.get(data[0],
+                             self.nocmd)(literal_eval(data[1].decode()))
             self.send(r)
             
-    def find(self, *args):
+    def find(self, board_dict):
+        print(board_dict)
+        self.board_dict = board_dict
         self.game[self.session_id] = self
         ## game dict is monitored by matchmaker 
         return b'in queue'

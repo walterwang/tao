@@ -1,4 +1,6 @@
 import socket, sys
+from unit import *
+from board import Board
 from queue import Queue
 from threading import Thread
 
@@ -19,7 +21,8 @@ class Client:
         self.sock.connect((ip, port))
         self.queue = Queue()
         self.recieve()
-        
+        self.board = Board() 
+
     def send(self, message):
         try:
             self.sock.sendall(message.encode())
@@ -36,6 +39,12 @@ class Client:
     
 if __name__ == '__main__':
     c1 = Client(HOST, PORT)
+    c1.board.add(Knight(), 2, 3)
+    c1.board.add(Knight(), 4, 5)
+    
     c2 = Client(HOST, PORT)
-    c1.send('find')
-
+    c2.board.add(Knight(), 5, 8)
+    c2.board.add(Knight(), 7, 9)
+    
+    c1.send(f"find||{c1.board.units[0]}")
+    c2.send(f"find||{c2.board.units[0]}")
