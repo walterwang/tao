@@ -65,7 +65,7 @@ Units:
         special:
           has_special: False
         pop: 1
-        unamed: False
+        untamed: False
 
     Dragon:
         description:
