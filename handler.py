@@ -13,8 +13,8 @@ def threaded(fn):
 
 class Handler:
     def __init__(self, request_handler):
+        self.request_handler = request_handler
         self.recv = request_handler.request.recv
-        self.send = request_handler.request.sendall
         self.game = request_handler.game
         
         self.in_game = False 
@@ -37,22 +37,27 @@ class Handler:
                              self.nocmd)(literal_eval(data[1].decode()))
             self.send(r)
             
-    def find(self, board_dict):
-        print(board_dict)
-        self.board_dict = board_dict
+    def send(self, msg):
+        msg = bytes(msg, encoding='utf-8')
+        self.request_handler.request.sendall(msg)
+
+
+    def find(self, units):
+        print(units)
+        self.units = units 
         self.game[self.session_id] = self
         ## game dict is monitored by matchmaker 
-        return b'in queue'
+        return 'inqueue'
 
     def canc(self, *args):
         try:
             self.game.pop(self.session_id)
         except:
-            return b'game not found'
-        return b'cancelled'
+            return 'game not found'
+        return 'cancelled'
     
     def quit(self, *args):
-        return b'quit'
+        return 'quit'
 
     def form(self, *args):
         pass
@@ -64,7 +69,3 @@ class Handler:
     def nocmd(self, data):
         return b'command not found'
     
-    def game_start(self, game_init):
-        # method called by matchmaker, to notify start of game
-        self.send(game_init)
-

@@ -1,4 +1,5 @@
 import socket, sys
+import ast
 from unit import *
 from board import Board
 from queue import Queue
@@ -21,7 +22,8 @@ class Client:
         self.sock.connect((ip, port))
         self.queue = Queue()
         self.recieve()
-        self.board = Board() 
+        self.board = Board()
+        self.current_turn = 0
 
     def send(self, message):
         try:
@@ -31,12 +33,44 @@ class Client:
 
     def close(self):
         self.sock.close()
+    
+    def begin(self, args):
+        self.player = int(args[0])
+        p1_units, p2_units = ast.literal_eval(args[1])
+        self.board = Board(board_dict = {0:p1_units, 1:p2_units})
+        
+    def find(self):
+        self.send(f"find||{self.board.units[0]}")
+    
+    def inqueue(self, args):
+        print('player in queue')
+    
+    def move(self, m):
+        if self.player == self.current_turn:
+            self.send(f"move||{m}")
+
+    def resp(self, args):
+        self.current_turn = int(args[0])
+        self.update_board(args[1])
+
+    def update_board(self, action_dict):
+        if action_dict['type'] == 'move':
+            self.board.change(action_dict['player'], action_dict['uid'],
+                              action_dict['new_location'],
+                              action_dict['orient'])
 
     @threaded
     def recieve(self):
         while True:
-            self.queue.put(self.sock.recv(1024))
+            r = self.sock.recv(1024).decode()
+            print(r)
+            if r: 
+                r = r.split('||')
+                getattr(self, r[0])(r[1:])
     
+
+
+
 if __name__ == '__main__':
     c1 = Client(HOST, PORT)
     c1.board.add(Knight(), 2, 3)
@@ -45,6 +79,6 @@ if __name__ == '__main__':
     c2 = Client(HOST, PORT)
     c2.board.add(Knight(), 5, 8)
     c2.board.add(Knight(), 7, 9)
-    
-    c1.send(f"find||{c1.board.units[0]}")
-    c2.send(f"find||{c2.board.units[0]}")
+   
+    c1.find()
+    c2.find()

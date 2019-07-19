@@ -6,27 +6,48 @@ from board import Board
 import unit
 from unit import *
 
+def check_valid(fn):
+    def wrapper(*args, **kwargs):
+        
+        fn(*args, **kwargs)
+    return wrapper
+
 class Game(Thread):
-    def __init__(self, p0, p1):
-        self.players = [p0, p1]
+    def __init__(self, p0_handler, p1_handler):
+        self.players = [p0_handler, p1_handler]
         shuffle(self.players)
+        
         self.board = Board()
-        self.create_board() 
+        self.board.add_units(self.players[0].units, 0)
+        self.board.add_units(self.players[1].units, 1)
+        
         print('board created')
         print(self.board.units)
-        self.players[0].send(b'you are player 1')
-        self.players[1].send(b'you are player 2')
+        self.players[0].send(f'begin||0||{self.board.units}')
+        self.players[1].send(f'begin||1||{self.board.units}')
 
-
+        self.game_going = True
+        self.has_actions = True
+        
+        self.cmd = {
+                    'move': self.move,
+                    'attack': self.attack,
+                    'orient': self.orient,
+                    'wait': self.wait,
+                    'nocmd': self.nocmd
+                   }
         Thread.__init__(self)
-    
-    def create_board(self):
-        for ind, p in enumerate(self.players):
-            for uid, u in p.board_dict.items():
-                self.board.add(getattr(unit, u['id'])(), u['pos'][0], u['pos'][1], p=ind, uid=uid)
-                 
+           
+                
     def run(self):
-        pass 
+        while self.game_going:
+            for player, handler in self.players:
+                while self.has_actions:
+                    action = handler.command.get()
+                    self.cmd.get(action['type'], 'nocmd')(action)
+
+    def move(self, action):
+
 
 #class Game:
 #    def __init__(self, p0, p1):

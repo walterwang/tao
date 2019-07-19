@@ -1,9 +1,15 @@
+from unit import *
+import unit
+
 class Board:
-    def __init__(self):
+    def __init__(self, board_dict=None):
         self.units = [{},{}]
         self.pop_count = [0,0]
+        if board_dict:
+            for player, units in board_dict.items():
+                self.add_units(units, player)
 
-
+    
     def add(self, unit, x, y, p=0, uid=None):
         try:
             self.check_add(unit, x, y, p)
@@ -19,6 +25,11 @@ class Board:
         self.units[p][unit.uid] = unit
         self.update(p)
 
+    def add_units(self, units, player):
+        for uid, u in units.items():
+            self.add(getattr(unit, u['id'])(), u['pos'][0], u['pos'][1],
+                           p=player, uid=uid)
+    
     def remove(self, uid, p):
         self.pop_count[p] -= self.units[p][uid].pop
         self.units[p].pop(uid)
@@ -29,7 +40,6 @@ class Board:
     def check_add(self, unit, x, y, p):
         if unit.pop + self.pop_count[p] > 10:
             raise Exception('pop limit reached')
-
         for u in self.units[p].values():
             if u.pos == [x, y]:
                 raise Exception('{}, {} is occupied by {}'.format(
@@ -44,7 +54,9 @@ class Board:
             if i not in self.units[p]:
                 return i
     
+    def change_board(self, player, uid, field, newvalue):
+        setattr(self.units[player][uid], field, newvalue)
+
     def serialize(self):
         board = {}
-
         return board

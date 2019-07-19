@@ -14,10 +14,10 @@ class Matcher(Thread):
         while True:
             if len(self.game) > 1:
                 print('game found')
-                p0 = self.game.popitem()
-                p1 = self.game.popitem()
+                p0_id, p0_handler = self.game.popitem()
+                p1_id, p1_handler = self.game.popitem()
 
-                Game(p0[1], p1[1]).start()
+                Game(p0_handler, p1_handler).start()
 
             time.sleep(1)
 if __name__ == '__main__':

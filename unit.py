@@ -1,5 +1,4 @@
 from config import Config
-from board import Board
 
 UNITS = Config('default.yml').units
 
@@ -81,13 +80,3 @@ class Dragon(Unit):
         else:
             self.resetattr('dmg')
 
-if __name__ == '__main__':
-    b = Board()
-    
-    k1 = Knight()
-    p1 = Pyro()
-    d1 = Dragon()
-    dp = Dpyro()
-    b.add(k1, 1, 3)
-    b.add(p1, 3, 5)
-    b.add(d1, 5, 2)

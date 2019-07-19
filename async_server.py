@@ -6,6 +6,7 @@ from matchmaking import Matcher
 from queue import Queue
 from handler import Handler
 
+
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
     def __init__(self, request, client_address, server):
         self.game = server.game
