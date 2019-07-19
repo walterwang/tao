@@ -1,4 +1,3 @@
-from itertools import cycle
 from threading import Thread
 from random import shuffle
 from board import Board
@@ -8,8 +7,17 @@ from unit import *
 
 def check_valid(fn):
     def wrapper(*args, **kwargs):
-        
+        self = args[0]
+        action = args[1]
+        player = args[2]
+
+        if not self.active_unit:
+            self.active_unit = self.board.units[player][action['uid']]
+        elif self.active_unit is not self.board.units[player][action['uid']]:
+            print('wrong active unit')
+            return
         fn(*args, **kwargs)
+        self.update_players(action)
     return wrapper
 
 class Game(Thread):
@@ -28,7 +36,7 @@ class Game(Thread):
 
         self.game_going = True
         self.has_actions = True
-        
+        self.active_unit = None
         self.cmd = {
                     'move': self.move,
                     'attack': self.attack,
@@ -41,12 +49,33 @@ class Game(Thread):
                 
     def run(self):
         while self.game_going:
-            for player, handler in self.players:
+            for player, handler in enumerate(self.players):
                 while self.has_actions:
                     action = handler.command.get()
-                    self.cmd.get(action['type'], 'nocmd')(action)
+                    self.cmd.get(action['type'], 'nocmd')(action, player)
 
-    def move(self, action):
+    def update_players(self, msg):
+        for handler in self.players:
+            handler.send(msg)
+    
+    def is_blocked(self, attacker, target):
+        return None
+
+    @check_valid
+    def move(self, action, player):
+        self.active_unit.pos = action['pos']
+        # self.board[player][action['uid']].orient = action['orient']
+    
+    @check_valid
+    def attack(self, action, player):
+        for target in self.board[player][action['targets']]:
+            # assign target with target object in the decorator
+
+            if self.active_unit.blockable:
+                if self.is_blocked(self.active_unit, target):
+                    pass
+            else:
+                target.hp = target.hp - self.active_unit.dmg
 
 
 #class Game:
