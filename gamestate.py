@@ -68,7 +68,7 @@ class Game(Thread):
     
     @check_valid
     def attack(self, action, player):
-        for target in self.board[player][action['targets']]:
+        for target in self.board.units[player][action['targets']]:
             # assign target with target object in the decorator
 
             if self.active_unit.blockable:
@@ -77,6 +77,14 @@ class Game(Thread):
             else:
                 target.hp = target.hp - self.active_unit.dmg
 
+    def orient(self, action, player):
+        pass
+
+    def wait(self, action, player):
+        pass
+
+    def nocmd(self, action, player):
+        pass
 
 #class Game:
 #    def __init__(self, p0, p1):

@@ -1,11 +1,10 @@
-import socket
-import threading
-import socketserver
-import time
 from matchmaking import Matcher
 from queue import Queue
 from handler import Handler
 
+import threading
+import socketserver
+import time
 
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
     def __init__(self, request, client_address, server):

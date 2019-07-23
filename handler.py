@@ -3,13 +3,6 @@ from threading import Thread
 from ast import literal_eval
 import random
 
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        thread = Thread(target=fn, args=args, kwargs=kwargs)
-        thread.start()
-        return thread
-    return wrapper
-
 
 class Handler:
     def __init__(self, request_handler):
@@ -63,7 +56,7 @@ class Handler:
         pass
 
     def move(self, data):
-        self.command.put(data[1])
+        self.command.put(literal_eval(data[1]))
         return self.recieve.get()
 
     def nocmd(self, data):

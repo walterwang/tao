@@ -1,9 +1,10 @@
-import socket, sys
 import ast
-from unit import *
+import socket
+from unit import * 
 from board import Board
 from queue import Queue
 from threading import Thread
+from ast import literal_eval
 
 HOST, PORT = "localhost", 9999
 
@@ -53,12 +54,11 @@ class Client:
         self.current_turn = int(args[0])
         self.update_board(args[1])
 
-    def update_board(self, action_dict):
+    def update(self, action_dict):
         if action_dict['type'] == 'move':
             self.board.change(action_dict['player'], action_dict['uid'],
                               action_dict['new_location'],
                               action_dict['orient'])
-
     @threaded
     def recieve(self):
         while True:
@@ -66,10 +66,8 @@ class Client:
             print(r)
             if r: 
                 r = r.split('||')
-                getattr(self, r[0])(r[1:])
+                getattr(self, r[0])(literal_eval(r[1:]))
     
-
-
 
 if __name__ == '__main__':
     c1 = Client(HOST, PORT)
@@ -82,3 +80,4 @@ if __name__ == '__main__':
    
     c1.find()
     c2.find()
+
