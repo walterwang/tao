@@ -52,21 +52,22 @@ class Client:
 
     def resp(self, args):
         self.current_turn = int(args[0])
-        self.update_board(args[1])
+        self.update(literal_eval(args[1]))
 
     def update(self, action_dict):
         if action_dict['type'] == 'move':
             self.board.change(action_dict['player'], action_dict['uid'],
                               action_dict['new_location'],
                               action_dict['orient'])
+    
     @threaded
     def recieve(self):
         while True:
             r = self.sock.recv(1024).decode()
-            print(r)
+            # print(r)
             if r: 
                 r = r.split('||')
-                getattr(self, r[0])(literal_eval(r[1:]))
+                getattr(self, r[0])(r[1:])
     
 
 if __name__ == '__main__':

@@ -40,7 +40,7 @@ class Handler:
         self.units = units 
         self.game[self.session_id] = self
         ## game dict is monitored by matchmaker 
-        return 'inqueue'
+        return "inqueue||{'type':'inqueue'}||"
 
     def canc(self, *args):
         try:
@@ -57,8 +57,9 @@ class Handler:
 
     def move(self, data):
         self.command.put(literal_eval(data[1]))
-        return self.recieve.get()
+        #return self.recieve.get()
+        return "cmd recieved||{'type':'msg recieved'}"
 
     def nocmd(self, data):
-        return b'command not found'
+        return 'command not found'
     
