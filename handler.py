@@ -10,12 +10,12 @@ class Handler:
         self.recv = request_handler.request.recv
         self.game = request_handler.game
         
-        self.in_game = False 
+        self.in_game = False
         
         self.command = Queue()
         self.recieve = Queue()
        
-        self.session_id = random.randint(1,10000)
+        self.session_id = random.randint(1, 10000)
 
         self.cmd = {b'find': self.find,
                     b'canc': self.canc,
@@ -26,20 +26,25 @@ class Handler:
     def __call__(self):
         while True:
             data = self.recv(1024).split(b'||')
-            r = self.cmd.get(data[0],
-                             self.nocmd)(literal_eval(data[1].decode()))
-            self.send(r)
+            try:
+                r = self.cmd.get(data[0],
+                                 self.nocmd)(literal_eval(data[1].decode()))     
+            except Exception as e:
+                print(e) 
+                break
+            if r:
+                self.send(r)
             
     def send(self, msg):
         msg = bytes(msg, encoding='utf-8')
+        
         self.request_handler.request.sendall(msg)
-
 
     def find(self, units):
         print(units)
-        self.units = units 
+        self.units = units
         self.game[self.session_id] = self
-        ## game dict is monitored by matchmaker 
+        ## game dict is monitored by matchmaker
         return "inqueue||{'type':'inqueue'}||"
 
     def canc(self, *args):
@@ -55,10 +60,9 @@ class Handler:
     def form(self, *args):
         pass
 
-    def move(self, data):
-        self.command.put(literal_eval(data[1]))
+    def move(self, action):
+        self.command.put(action)
         #return self.recieve.get()
-        return "cmd recieved||{'type':'msg recieved'}"
 
     def nocmd(self, data):
         return 'command not found'

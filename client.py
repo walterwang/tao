@@ -54,11 +54,12 @@ class Client:
         self.current_turn = int(args[0])
         self.update(literal_eval(args[1]))
 
-    def update(self, action_dict):
+    def update(self, args):
+        action_dict = ast.literal_eval(args[0])
         if action_dict['type'] == 'move':
-            self.board.change(action_dict['player'], action_dict['uid'],
-                              action_dict['new_location'],
-                              action_dict['orient'])
+            self.board.change(action_dict['player'],
+                    action_dict['uid'],
+                    'pos', action_dict['pos'])
     
     @threaded
     def recieve(self):
@@ -81,4 +82,17 @@ if __name__ == '__main__':
    
     c1.find()
     c2.find()
+    
+    c3 = Client(HOST, PORT)
+    c3.board.add(Knight(), 5, 8)
+    c3.board.add(Knight(), 7, 9)
+
+    c4 = Client(HOST, PORT)
+    c4.board.add(Knight(), 5, 8)
+    c4.board.add(Knight(), 7, 9)
+ 
+
+    move_action = {'type': 'move',
+                   'uid': 1,
+                   'pos': 3}
 

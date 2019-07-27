@@ -41,5 +41,5 @@ if __name__ == '__main__':
     
     print("server loop running in thread:", server_thread.name)
 
-    time.sleep(20)
+    time.sleep(200)
     server.shutdown()

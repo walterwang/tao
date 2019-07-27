@@ -16,8 +16,8 @@ def check_valid(fn):
         elif self.active_unit is not self.board.units[player][action['uid']]:
             print('wrong active unit')
             return
-        fn(*args, **kwargs)
-        self.update_players(action)
+        changes = fn(*args, **kwargs)
+        self.update_players(changes)
     return wrapper
 
 class Game(Thread):
@@ -49,12 +49,17 @@ class Game(Thread):
                 
     def run(self):
         while self.game_going:
-            for player, handler in enumerate(self.players):
-                while self.has_actions:
-                    action = handler.command.get()
-                    self.cmd.get(action['type'], 'nocmd')(action, player)
+            try:
+                for player, handler in enumerate(self.players):
+                    while self.has_actions:
+                        action = handler.command.get()
+                        self.cmd.get(action['type'], 'nocmd')(action, player)
+            except:
+                print('player disconnected')
+                break
 
     def update_players(self, msg):
+        msg = f"update||{msg}"
         for handler in self.players:
             handler.send(msg)
     
@@ -64,6 +69,13 @@ class Game(Thread):
     @check_valid
     def move(self, action, player):
         self.active_unit.pos = action['pos']
+        orient = None
+        changes = {'player': player,
+                'uid': action['uid'],
+                'type': 'move',
+                'pos': action['pos'],
+                'orient': orient}
+        return changes
         # self.board[player][action['uid']].orient = action['orient']
     
     @check_valid

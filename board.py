@@ -54,7 +54,7 @@ class Board:
             if i not in self.units[p]:
                 return i
     
-    def change_board(self, player, uid, field, newvalue):
+    def change(self, player, uid, field, newvalue):
         setattr(self.units[player][uid], field, newvalue)
 
     def serialize(self):
