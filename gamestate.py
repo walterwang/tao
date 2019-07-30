@@ -13,6 +13,8 @@ def check_valid(fn):
 
         if not self.active_unit:
             self.active_unit = self.board.units[player][action['uid']]
+            if self.active_unit.wait_times > 0:
+                return
         elif self.active_unit is not self.board.units[player][action['uid']]:
             print('wrong active unit')
             return
@@ -27,6 +29,10 @@ class Game(Thread):
         
         self.board = Board()
         self.board.add_units(self.players[0].units, 0)
+        
+        for _, unit in self.players[1].units.items():
+            unit['pos'][1] = 10 - unit['pos'][1]
+ 
         self.board.add_units(self.players[1].units, 1)
         
         print('board created')
@@ -54,6 +60,7 @@ class Game(Thread):
                     while self.has_actions:
                         action = handler.command.get()
                         self.cmd.get(action['type'], 'nocmd')(action, player)
+                    self.has_actions = True
             except:
                 print('player disconnected')
                 break
@@ -68,30 +75,19 @@ class Game(Thread):
 
     @check_valid
     def move(self, action, player):
-        self.active_unit.pos = action['pos']
-        orient = None
+        self.active_unit.move(action['pos'])
         changes = {'player': player,
                 'uid': action['uid'],
                 'type': 'move',
-                'pos': action['pos'],
-                'orient': orient}
+                'pos': action['pos']}
         return changes
-        # self.board[player][action['uid']].orient = action['orient']
     
     @check_valid
     def attack(self, action, player):
-        for target in self.board.units[player][action['targets']]:
-            # assign target with target object in the decorator
-
-            if self.active_unit.blockable:
-                if self.is_blocked(self.active_unit, target):
-                    pass
-            else:
-                target.hp = target.hp - self.active_unit.dmg
-
+        self.active_unit.attack(action['target'], self.board.coord)
     def orient(self, action, player):
-        pass
-
+        self.has_actions = False
+    
     def wait(self, action, player):
         pass
 

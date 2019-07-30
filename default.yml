@@ -4,8 +4,8 @@ Units:
             name: "Knight"
             type: "human"
         stats:
-            hp: 50
             armor: 15
+            hp: 50
             dmg: 22
             fblock: .8
             sblock: .4
@@ -27,8 +27,8 @@ Units:
           name: "Pyromancer"
           type: "human"
         stats:
-          hp: 35
           armor: 8
+          hp: 35
           dmg: 15
           fblock: .4
           sblock: .2
@@ -49,8 +49,8 @@ Units:
           name: "Dragomancer"
           type: "human"
         stats:
-          hp: 35
           armor: 8
+          hp: 35
           dmg: 15
           fblock: .4
           sblock: .2
@@ -72,8 +72,8 @@ Units:
           name: "Dragon"
           type: "beast"
         stats:
-          hp: 65
           armor: 12
+          hp: 65
           dmg: 28
           fblock: .4
           sblock: .2

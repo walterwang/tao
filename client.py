@@ -94,5 +94,5 @@ if __name__ == '__main__':
 
     move_action = {'type': 'move',
                    'uid': 1,
-                   'pos': 3}
+                   'pos': [0, 6]}
 
