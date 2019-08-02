@@ -61,8 +61,8 @@ class Game(Thread):
                         action = handler.command.get()
                         self.cmd.get(action['type'], 'nocmd')(action, player)
                     self.has_actions = True
-            except:
-                print('player disconnected')
+            except Exception as e:
+                print(e, 'player disconnected')
                 break
 
     def update_players(self, msg):
@@ -84,7 +84,8 @@ class Game(Thread):
     
     @check_valid
     def attack(self, action, player):
-        self.active_unit.attack(action['target'], self.board.coord)
+        changes = self.active_unit.attack(action['target'], self.board.coord)
+        return changes
     def orient(self, action, player):
         self.has_actions = False
     

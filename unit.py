@@ -83,10 +83,13 @@ class Unit:
         setattr(self, attr, UNITS[self.id]['stats'][attr])
     
     def attack(self, target, coord):
+        changes = []
         self.wait_times += ceil(self.wait/2)
         targets = self.attack_pattern(target, coord)
         for target_unit in targets:
-            self.attack_effect(target_unit)
+            if target_unit:
+                self.attack_effect(target_unit)
+        return changes
 
     def attack_pattern(self, target, coord):
         return [coord[target]]

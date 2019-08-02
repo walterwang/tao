@@ -91,7 +91,9 @@ if __name__ == '__main__':
     c4.board.add(Knight(), 5, 8)
     c4.board.add(Knight(), 7, 9)
  
-
+    att_action = {'type':'attack',
+                  'uid': 1,
+                  'target': (6,4)}
     move_action = {'type': 'move',
                    'uid': 1,
                    'pos': [0, 6]}
