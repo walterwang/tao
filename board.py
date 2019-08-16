@@ -41,8 +41,12 @@ class Board:
                            p=player, uid=uid)
     
     def remove(self, uid, p):
+        print('units', self.units)
+        print('uid, p', uid, p)
         self.pop_count[p] -= self.units[p][uid].pop
+        self.coord[tuple(self.units[p][uid]._pos)]= None
         self.units[p].pop(uid)
+
         # del self.units[p][uid].pos
         # del self.units[p][uid].orient
         self.update(p)            

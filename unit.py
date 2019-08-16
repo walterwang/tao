@@ -1,5 +1,7 @@
 from config import Config
 from math import ceil
+
+import random
 UNITS = Config('default.yml').units
 
 
@@ -82,25 +84,44 @@ class Unit:
     def resetattr(self, attr):
         setattr(self, attr, UNITS[self.id]['stats'][attr])
     
-    def attack(self, target, coord):
+    def attack(self, target=None, coord=None, targets=None):
         changes = []
         self.wait_times += ceil(self.wait/2)
-        targets = self.attack_pattern(target, coord)
-        for target_unit in targets:
+        self.set_new_orient(target)
+        if not targets:
+            targets = self.attack_pattern(target, coord)
+        print(f'attack: {target},  {targets}')
+        for target_unit, is_blocked in targets:
             if target_unit:
-                self.attack_effect(target_unit)
+                result = self.attack_effect(target_unit, is_blocked)
+                changes.append({'uid': target_unit.uid,
+                                'player': target_unit.player,
+                                'effect': result})
         return changes
 
     def attack_pattern(self, target, coord):
-        return [coord[target]]
+        if not target:
+            return []
+        return [[coord[target],None]]
     
-    def attack_effect(self, target_unit):
-        if self.blockable and target_unit.fblock > 0:
-            'check if blocked'
+    def attack_effect(self, target_unit, is_blocked):
+        if is_blocked and is_blocked == 'blocked':
             return
+        if is_blocked and is_blocked == 'unblocked':
             pass
+        elif self.blockable and target_unit.fblock > 0:
+            if self._orient == target_unit._orient:
+                block_chance = target_unit.bblock
+            elif (self._orient[0] + target_unit._orient[0]) == 0 \
+                    and (self._orient[1] + target_unit._orient[1]) == 0:
+                block_chance = target_unit.fblock
+            else:
+                block_chance = target_unit.sblock
+            if random.random() < block_chance:
+                return 'blocked'
         _ = target_unit.hp - self.dmg
-        
+        return 'unblocked' 
+    
     def move(self, new_pos):
         self.wait_times += self.wait//2
         self._pos = new_pos
@@ -163,6 +184,18 @@ class Unit:
 
     @pos.setter
     def pos(self, new_pos):
+        self.set_new_orient(new_pos)
+        self._pos = new_pos
+
+    @property
+    def orient(self):
+        return self._orient
+
+    @orient.setter
+    def orient(self, value):
+        self._orient = value
+    
+    def set_new_orient(self, new_pos):
         if self._pos:
             x = new_pos[0] - self._pos[0]
             y = new_pos[1] - self._pos[1]
@@ -174,15 +207,6 @@ class Unit:
                 y_orient = y/abs(y)
             self._orient = [x_orient, y_orient]
 
-        self._pos = new_pos
-
-    @property
-    def orient(self):
-        return self._orient
-
-    @orient.setter
-    def orient(self, value):
-        self._orient = value
 
 class Knight(Unit):
     def __init__(self):

@@ -25,7 +25,9 @@ class Client:
         self.recieve()
         self.board = Board()
         self.current_turn = 0
-
+        self.action = {'move': self.move_unit,
+                       'attack': self.attack_unit,
+                       'orient': self.orient_unit}
     def send(self, message):
         try:
             self.sock.sendall(message.encode())
@@ -50,22 +52,37 @@ class Client:
         if self.player == self.current_turn:
             self.send(f"move||{m}")
 
-    def resp(self, args):
-        self.current_turn = int(args[0])
-        self.update(literal_eval(args[1]))
-
     def update(self, args):
-        action_dict = ast.literal_eval(args[0])
-        if action_dict['type'] == 'move':
-            self.board.change(action_dict['player'],
-                    action_dict['uid'],
-                    'pos', action_dict['pos'])
+        self.current_turn = int(args[0])
+        ad = ast.literal_eval(args[1])
+        if ad['type'] == 'wait':
+            return
+        active_unit = self.board.units[ad['player']][ad['uid']]
+        self.action.get(ad['type'])(active_unit, ad)
+    
+    def move_unit(self, active_unit, action_dict):
+        active_unit.move(action_dict['pos'])
+
+    def attack_unit(self, active_unit, ad):
+        targets = ast.literal_eval(ad['targets'])
+        target = ast.literal_eval(ad['target'])
+        target = (int(target[0]), int(target[1]))
+        server_targets = []
+        for t in targets:
+            target_unit = self.board.units[t['player']][t['uid']]
+            server_targets.append([target_unit, t['effect']])
+        active_unit.attack(target=target,
+                           coord=self.board.coord,
+                           targets=server_targets)
+    
+    def orient_unit(self, active_unit, ad):
+        active_unit.orient=ad['orient']
+
     
     @threaded
     def recieve(self):
         while True:
             r = self.sock.recv(1024).decode()
-            # print(r)
             if r: 
                 r = r.split('||')
                 getattr(self, r[0])(r[1:])
@@ -93,8 +110,12 @@ if __name__ == '__main__':
  
     att_action = {'type':'attack',
                   'uid': 1,
-                  'target': (6,4)}
+                  'target': (4,5)}
     move_action = {'type': 'move',
                    'uid': 1,
                    'pos': [0, 6]}
 
+    orient_action = {'type':'orient',
+                     'uid': 1,
+                     'orient': [1, 0]}
+    wait_action = {'type':'wait'}

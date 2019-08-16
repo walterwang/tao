@@ -1,25 +1,29 @@
+import traceback
+import unit
+from unit import *
+
 from threading import Thread
 from random import shuffle
 from board import Board
-
-import unit
-from unit import *
 
 def check_valid(fn):
     def wrapper(*args, **kwargs):
         self = args[0]
         action = args[1]
         player = args[2]
-
-        if not self.active_unit:
-            self.active_unit = self.board.units[player][action['uid']]
-            if self.active_unit.wait_times > 0:
+        if action['type'] != 'wait':
+            if not self.active_unit:
+                self.active_unit = self.board.units[player][action['uid']]
+                if self.active_unit.wait_times > 0:
+                    return
+            elif self.active_unit is not self.board.units[player][action['uid']]:
+                print('wrong active unit')
                 return
-        elif self.active_unit is not self.board.units[player][action['uid']]:
-            print('wrong active unit')
-            return
+        print(action, player)
         changes = fn(*args, **kwargs)
-        self.update_players(changes)
+        if action['type'] in ['orient', 'wait']:
+            player = (player + 1) % 2
+        self.update_players(changes, player)
     return wrapper
 
 class Game(Thread):
@@ -58,15 +62,18 @@ class Game(Thread):
             try:
                 for player, handler in enumerate(self.players):
                     while self.has_actions:
+                        print(f'______player {player} turn____________')
                         action = handler.command.get()
                         self.cmd.get(action['type'], 'nocmd')(action, player)
                     self.has_actions = True
+                    self.active_unit = None
             except Exception as e:
-                print(e, 'player disconnected')
+                print(''.join(traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__)))
+                print('player disconnected')
                 break
 
-    def update_players(self, msg):
-        msg = f"update||{msg}"
+    def update_players(self, msg, player):
+        msg = f"update||{player}||{msg}"
         for handler in self.players:
             handler.send(msg)
     
@@ -84,81 +91,36 @@ class Game(Thread):
     
     @check_valid
     def attack(self, action, player):
-        changes = self.active_unit.attack(action['target'], self.board.coord)
+        print('self active unit: ', self.active_unit)
+        targets = self.active_unit.attack(target=action['target'],
+                                          coord=self.board.coord)
+        changes = {'player': player, 
+                   'uid': action['uid'],
+                   'type': 'attack',
+                   'target': str(action['target']),
+                   'targets': str(targets)}
         return changes
+
+    @check_valid
     def orient(self, action, player):
+        print('orient: ', action['orient'])
+        self.active_unit.orient = action['orient']
         self.has_actions = False
-    
+        changes = {'player': player,
+                   'uid': action['uid'],
+                   'type': 'orient',
+                   'orient': action['orient']}
+        return changes
+
+    @check_valid
     def wait(self, action, player):
-        pass
+        changes = {'player': player,
+                   'type': 'wait'}
+        self.has_actions = False
+        return changes
 
     def nocmd(self, action, player):
         pass
-
-#class Game:
-#    def __init__(self, p0, p1):
-#        self.gs = cycle(['1_move',
-#                         '1_att',
-#                         '1_orient',
-#                         '2_move',
-#                         '2_att',
-#                         '2_orient'])
-#        # p0.board.add_wait_time()
-#        p1.board.reverse_board()
-#        self.p = {0: p0,
-#                  1: p1}
-#        self.punit = { 0: p0.board.units.values(), 
-#                       1: p1.board.units.values()}
-#        self.all_units = p0.board.units.values().extend(p1.board.units.values())
-#    
-#    def start(self): 
-#        next(self.gs)
-#    
-#    def get_active_unit(self, player, unit):
-#        try:
-#            return self.p[player].board.units[unit]
-#        except Exception as e:
-#            print(e)
-#            raise Exception('no active unit')
-#
-#
-#    def move(self, player, unit, path):
-#        # check if there is a unit
-#        a_unit = self.get_active_unit(player, unit)
-#        self.check_valid_path(player, a_unit, path)
-#        a_unit.pos = path[-1]
-#    
-#    def attack(self, player, unit, target):
-#        targets = [target]
-#        a_unit = self.get_active_unit(player, unit)
-#        target = a_unit.getlos(target)
-#        targets = a_unit.getaoe(target) 
-#        for t in targets:
-#            for u in self.all_units:
-#                if t == u.pos:
-#                    self.calc_dmg(a_unit, u)
-#
-#    def calc_dmg(self, attacker, defender):
-#        defender.hp -= attacker.dmg
-#    
-#    def orient(self, player, unit, orient):
-#        a_unit = self.get_active_unit(player, unit)
-#        # check if valid orientation
-#        a_unit.orient = orient
-#
-#    def check_valid_path(self, player, a_unit, path):
-#        if len(path) > a_unit.movement:
-#            raise Exception('{} too many moves'.format(a_unit))
-#        for ind, p in enumerate(path):
-#            for u in self.punit[player]:
-#                if p == u.pos and (u.untamed or ind == len(path)-1):
-#                    raise Exception('{} path is blocked by {}'.format(a_unit, u))
-#            for u in self.punit[1^player]:
-#                if p == u.pos:
-#                    raise Exception('{} path is blocked by {}'.format(a_unit, u))
-    
-
-
 
 
         
